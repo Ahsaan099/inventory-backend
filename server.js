@@ -12,9 +12,12 @@ app.use(cors({
 app.use(express.json());
 
 const pool = mysql.createPool({
-  uri: process.env.DATABASE_URL,
+  uri: "mysql://root:EOiyDJgfAHVbIlVPBpIOmRiDbuwsxaDx@autorack.proxy.rlwy.net:16212/railway",
   waitForConnections: true,
   connectionLimit: 10,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // ── Init Tables ──────────────────────────────────────────────────────────────
