@@ -4,13 +4,17 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+
+// Bulletproof CORS setup jo Vercel aur har jagah se request allow karega
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 app.use(express.json());
 
+// Direct live database connection string
 const pool = mysql.createPool({
   uri: "mysql://root:EOiyDJgfAHVbIlVPBpIOmRiDbuwsxaDx@autorack.proxy.rlwy.net:16212/railway",
   waitForConnections: true,
@@ -23,8 +27,8 @@ const pool = mysql.createPool({
 // ── Init Tables ──────────────────────────────────────────────────────────────
 async function initDB() {
   const conn = await pool.getConnection();
-  await conn.query("DROP TABLE IF EXISTS stock_movements");
-  await conn.query("DROP TABLE IF EXISTS products");
+  
+  // Safe Table Creation without crashing the server
   await conn.query(`
     CREATE TABLE IF NOT EXISTS categories (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,6 +36,7 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  
   await conn.query(`
     CREATE TABLE IF NOT EXISTS products (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,6 +49,7 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  
   await conn.query(`
     CREATE TABLE IF NOT EXISTS stock_movements (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,6 +60,7 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  
   conn.release();
   console.log("✅ Tables ready");
 }
